@@ -460,6 +460,18 @@
       word-break: break-word;
     }
 
+    .company-image-wrap {
+      margin-top: 12px;
+    }
+
+    .company-image {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      display: block;
+    }
+
     .company-actions {
       display: flex;
       gap: 8px;
@@ -682,6 +694,10 @@
           <label for="companyNote">Notiz</label>
           <textarea id="companyNote" placeholder="z. B. nettes Gespräch, Praktikum im Sommer möglich"></textarea>
 
+          <label for="companyImage">Visitenkarte / Flyer / Foto (optional)</label>
+          <input id="companyImage" type="file" accept="image/*">
+          <div class="hint">Zum Beispiel eine abfotografierte Visitenkarte oder ein Flyer. Das Bild wird vor dem Speichern verkleinert.</div>
+
           <div class="actions">
             <button class="primary" id="companySaveBtn" type="button">Unternehmen speichern</button>
             <button class="secondary" id="companyResetBtn" type="button">Felder leeren</button>
@@ -845,8 +861,7 @@
             });
             return;
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       }
 
       const url = URL.createObjectURL(blob);
@@ -879,20 +894,22 @@
       syncCard();
     });
 
-    // Meine Unternehmen ohne Foto
+    // Meine Unternehmen mit optionalem Bild
     const companyName = document.getElementById('companyName');
     const companyStand = document.getElementById('companyStand');
     const companyContact = document.getElementById('companyContact');
     const companyRating = document.getElementById('companyRating');
     const companyNext = document.getElementById('companyNext');
     const companyNote = document.getElementById('companyNote');
+    const companyImage = document.getElementById('companyImage');
     const companyList = document.getElementById('companyList');
 
     let companies = [];
+    let companyImageData = '';
 
     function loadCompanies() {
       try {
-        const saved = localStorage.getItem('tdb_companies_simple');
+        const saved = localStorage.getItem('tdb_companies_with_image');
         companies = saved ? JSON.parse(saved) : [];
       } catch {
         companies = [];
@@ -902,10 +919,10 @@
 
     function saveCompanies() {
       try {
-        localStorage.setItem('tdb_companies_simple', JSON.stringify(companies));
+        localStorage.setItem('tdb_companies_with_image', JSON.stringify(companies));
         renderCompanies();
       } catch (e) {
-        alert('Die gespeicherten Daten sind zu groß. Bitte ältere Einträge löschen.');
+        alert('Die gespeicherten Daten sind zu groß. Bitte ältere Einträge löschen oder kleinere Bilder verwenden.');
       }
     }
 
@@ -938,6 +955,11 @@
           </div>
           <span class="company-badge ${ratingClass(item.rating)}">${ratingLabel(item.rating)}</span>
           <div class="company-note">${item.note || '—'}</div>
+          ${item.image ? `
+            <div class="company-image-wrap">
+              <img src="${item.image}" alt="Visitenkarte oder Flyer" class="company-image">
+            </div>
+          ` : ''}
           <div class="company-actions">
             <button class="mini-btn danger" onclick="deleteCompany(${index})">Löschen</button>
           </div>
@@ -950,6 +972,47 @@
       saveCompanies();
     };
 
+    companyImage.addEventListener('change', () => {
+      const file = companyImage.files && companyImage.files[0];
+      if (!file) {
+        companyImageData = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxSize = 900;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxSize) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          companyImageData = canvas.toDataURL('image/jpeg', 0.72);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
     document.getElementById('companySaveBtn').addEventListener('click', () => {
       const item = {
         name: companyName.value.trim(),
@@ -957,7 +1020,8 @@
         contact: companyContact.value.trim(),
         rating: companyRating.value,
         next: companyNext.value,
-        note: companyNote.value.trim()
+        note: companyNote.value.trim(),
+        image: companyImageData
       };
 
       if (!item.name) {
@@ -974,6 +1038,8 @@
       companyRating.value = '';
       companyNext.value = '';
       companyNote.value = '';
+      companyImage.value = '';
+      companyImageData = '';
     });
 
     document.getElementById('companyResetBtn').addEventListener('click', () => {
@@ -983,6 +1049,8 @@
       companyRating.value = '';
       companyNext.value = '';
       companyNote.value = '';
+      companyImage.value = '';
+      companyImageData = '';
     });
 
     syncCard();
