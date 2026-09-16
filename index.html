@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurzbewerbung – Tag des Berufs</title>
+  <meta name="theme-color" content="#f7f8fb">
+
+  <meta name="description" content="Kurzbewerbung und Messekontakte – lokal auf dem eigenen Gerät.">
+  <link rel="manifest" href="manifest.json">
+  <script src="html2canvas.min.js"></script>
+  <style>
+    :root {
+      --violett: #332f87;
+      --orange: #f97316;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --soft: #f7f8fc;
+      --line: #dde3ec;
+      --text: #17212b;
+      --muted: #667085;
+      --shadow: 0 18px 40px rgba(18,24,40,.10);
+      --green: #15803d;
+      --yellow: #a16207;
+      --gray: #6b7280;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, #edf1f8 0%, transparent 28%),
+        radial-gradient(circle at top right, #fff3e9 0%, transparent 24%),
+        var(--bg);
+      color: var(--text);
+      padding: 12px;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .hero-bar {
+      height: 10px;
+      background: linear-gradient(90deg, var(--violett) 72%, var(--orange) 72%);
+    }
+
+    .hero-inner {
+      padding: 18px;
+      text-align: center;
+    }
+
+    .hero-inner h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.08;
+      color: var(--violett);
+    }
+
+    .hero-inner p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #eef2f8;
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(90deg, var(--violett), #4b44b2);
+      color: #fff;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel,
+    .preview-shell,
+    .company-list-shell {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel,
+    .company-list-shell {
+      padding: 16px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #cfd7e4;
+      border-radius: 14px;
+      padding: 12px 13px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--violett);
+      box-shadow: 0 0 0 3px rgba(51,47,135,.10);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 13px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: linear-gradient(90deg, var(--violett), #4b44b2);
+      color: #fff;
+      flex: 1 1 220px;
+    }
+
+    .secondary {
+      background: #eef2f8;
+      color: var(--text);
+      flex: 1 1 160px;
+    }
+
+    .preview-shell {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-topline {
+      height: 10px;
+      background: linear-gradient(90deg, var(--violett) 72%, var(--orange) 72%);
+    }
+
+    .preview {
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      background: #fff;
+      min-height: 480px;
+    }
+
+    .preview::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      bottom: -60px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(249,115,22,.08);
+      pointer-events: none;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      background: transparent;
+      padding: 0;
+      border-radius: 50%;
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .brand-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .intro {
+      font-size: 15px;
+      line-height: 1.55;
+      margin-bottom: 16px;
+      color: var(--text);
+      max-width: 760px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .head {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: none;
+    }
+
+    .name {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.02;
+      color: var(--violett);
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+      word-break: break-word;
+    }
+
+    .meta-list {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .meta-list strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      max-width: 100%;
+    }
+
+    .chip b {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      flex: 0 0 auto;
+    }
+
+    .chip span {
+      word-break: break-word;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin: 0 0 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 120px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .box-content {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    .company-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .company-list-header h2 {
+      margin: 0;
+      font-size: 22px;
+      color: var(--violett);
+    }
+
+    .company-empty {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 12px 0;
+    }
+
+    .company-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .company-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .company-meta {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .company-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-top {
+      background: rgba(21,128,61,.10);
+      color: var(--green);
+    }
+
+    .badge-good {
+      background: rgba(161,98,7,.10);
+      color: var(--yellow);
+    }
+
+    .badge-maybe {
+      background: rgba(107,114,128,.10);
+      color: var(--gray);
+    }
+
+    .company-note {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-line;
+      word-break: break-word;
+    }
+
+    .company-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .mini-btn {
+      background: #eef2f8;
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: #fafbff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 10px; }
+
+      .hero-inner { padding: 16px; }
+
+      .hero-inner h1 { font-size: 24px; }
+
+      .panel,
+      .preview-shell,
+      .company-list-shell {
+        border-radius: 20px;
+      }
+
+      .panel,
+      .company-list-shell {
+        padding: 14px;
+      }
+
+      .preview { padding: 14px; }
+
+      .head {
+        grid-template-columns: 76px 1fr;
+        gap: 10px;
+      }
+
+      .avatar {
+        width: 76px;
+        height: 76px;
+        border-radius: 18px;
+      }
+
+      .name { font-size: 24px; }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .primary,
+      .secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-bar"></div>
+      <div class="hero-inner">
+        <h1>Kurzbewerbung – Tag des Berufs</h1>
+        <p>Erstelle deine Kurzbewerbung und merke dir interessante Unternehmen direkt in derselben App.</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="bewerbung">Kurzbewerbung</button>
+      <button class="tab-btn" data-tab="unternehmen">Meine Unternehmen</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-bewerbung">
+      <div class="grid">
+        <div class="panel">
+          <label for="name">Dein Name</label>
+          <input id="name" value="">
+
+          <label for="school">Deine Schule</label>
+          <select id="school">
+            <option value="">Bitte auswählen</option>
+            <option>Friedrich-List-Schule</option>
+            <option>Emil-Possehl-Schule</option>
+          </select>
+
+          <label for="abschluss">Abschluss (voraussichtlich)</label>
+          <input id="abschluss" value="">
+
+          <label for="abschlussWann">Wann machst du deinen Abschluss?</label>
+          <input id="abschlussWann" value="" placeholder="z. B. Sommer 2026">
+
+          <label for="contact">Kontakt</label>
+          <input id="contact" value="">
+
+          <label for="interest">Ich suche</label>
+          <select id="interest">
+            <option value="">Bitte auswählen</option>
+            <option>Praktikum</option>
+            <option>Ausbildung</option>
+            <option>Duales Studium</option>
+          </select>
+
+          <label for="timeframe">Ab wann / Zeitraum</label>
+          <input id="timeframe" value="">
+
+          <label for="career">Beruf oder Bereich</label>
+          <input id="career" value="">
+
+          <label for="photoInput">Foto von dir (optional)</label>
+          <input id="photoInput" type="file" accept="image/*">
+          <div class="hint">Das Foto wird lokal angezeigt und in die exportierte PNG-Datei übernommen.</div>
+
+          <div class="actions">
+            <button class="primary" id="saveBtn" type="button">Karte speichern / teilen</button>
+            <button class="secondary" id="resetBtn" type="button">Zurücksetzen</button>
+          </div>
+        </div>
+
+        <div class="preview-shell">
+          <div class="preview-topline"></div>
+          <div class="preview" id="card">
+            <div class="brand">
+              <img src="logo.png" alt="Tag des Berufs Logo" class="brand-logo" id="brandLogo">
+              <div class="brand-text">Tag des Berufs</div>
+            </div>
+
+            <div class="intro" id="introText">
+              Hallo, ich habe Sie am Tag des Berufs kennengelernt. Gerne bewerbe ich mich um ...
+            </div>
+
+            <div class="head">
+              <div class="avatar">
+                <img id="previewPhoto" alt="Foto">
+                <span id="photoPlaceholder">Foto<br>optional</span>
+              </div>
+              <div>
+                <div class="name" id="v_name">—</div>
+                <div class="meta-list" id="v_metaList">
+                  <strong>Schule:</strong> —<br>
+                  <strong>Voraussichtlicher Abschluss:</strong> —<br>
+                  <strong>Abschluss voraussichtlich:</strong> —<br>
+                  <strong>Kontakt:</strong> —
+                </div>
+              </div>
+            </div>
+
+            <div class="chips">
+              <div class="chip"><b>Wunsch</b> <span id="v_interest">—</span></div>
+              <div class="chip"><b>Ab</b> <span id="v_timeframe">—</span></div>
+              <div class="chip"><b>Bereich</b> <span id="v_career">—</span></div>
+            </div>
+
+            <div class="section-title">Kontakt</div>
+            <div class="box">
+              <div class="box-content" id="v_contact">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-unternehmen">
+      <div class="grid">
+        <div class="panel">
+          <label for="companyName">Unternehmen</label>
+          <input id="companyName" value="">
+
+          <label for="companyStand">Stand / Bereich</label>
+          <input id="companyStand" value="">
+
+          <label for="companyContact">Ansprechpartner</label>
+          <input id="companyContact" value="">
+
+          <label for="companyRating">Wie interessant?</label>
+          <select id="companyRating">
+            <option value="">Bitte auswählen</option>
+            <option value="top">⭐ Sehr interessant</option>
+            <option value="good">👍 Interessant</option>
+            <option value="maybe">🤔 Vielleicht</option>
+          </select>
+
+          <label for="companyNext">Nächster Schritt</label>
+          <select id="companyNext">
+            <option value="">Bitte auswählen</option>
+            <option>Mail schreiben</option>
+            <option>Anrufen</option>
+            <option>Praktikum anfragen</option>
+            <option>Ausbildung prüfen</option>
+            <option>Webseite ansehen</option>
+            <option>Später entscheiden</option>
+          </select>
+
+          <label for="companyNote">Notiz</label>
+          <textarea id="companyNote" placeholder="z. B. nettes Gespräch, Praktikum im Sommer möglich"></textarea>
+
+          <div class="actions">
+            <button class="primary" id="companySaveBtn" type="button">Unternehmen speichern</button>
+            <button class="secondary" id="companyResetBtn" type="button">Felder leeren</button>
+          </div>
+        </div>
+
+        <div class="company-list-shell">
+          <div class="company-list-header">
+            <h2>Meine Unternehmen</h2>
+          </div>
+          <div id="companyList"></div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="footer-note" style="margin-top:14px;">
+      <strong>Für den Messetag</strong><br>
+      Öffne diese Seite über den QR-Code. Deine Angaben bleiben auf deinem Gerät.
+      Wenn du möchtest, kannst du die App auf dem Startbildschirm installieren.
+      <div class="actions" style="margin-top:10px;">
+        <button class="secondary" id="installBtn" type="button" hidden>App auf Startbildschirm installieren</button>
+      </div>
+    </div>
+
+    <div class="footer-note" style="margin-top:14px;">
+      <strong>Deine Daten</strong><br>
+      Die App speichert deine Angaben und deine Messekontakte nur in diesem Browser auf diesem Gerät.
+      Es wird keine Schülerdatenbank verwendet. Du kannst deine Daten jederzeit exportieren oder löschen.
+      <div class="actions" style="margin-top:10px;">
+        <button class="secondary" id="exportDataBtn" type="button">Meine Daten exportieren</button>
+        <button class="secondary" id="deleteDataBtn" type="button">Alle Daten löschen</button>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Deine Daten bleiben auf diesem Gerät. Diese App überträgt keine Schülerdaten an einen Server.
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    const nameInput = document.getElementById('name');
+    const schoolInput = document.getElementById('school');
+    const abschlussInput = document.getElementById('abschluss');
+    const abschlussWannInput = document.getElementById('abschlussWann');
+    const contactInput = document.getElementById('contact');
+    const interestInput = document.getElementById('interest');
+    const timeframeInput = document.getElementById('timeframe');
+    const careerInput = document.getElementById('career');
+    const previewPhoto = document.getElementById('previewPhoto');
+    const photoPlaceholder = document.getElementById('photoPlaceholder');
+    const photoInput = document.getElementById('photoInput');
+
+    const PROFILE_KEY = 'tdb_profile_v2';
+    const PHOTO_KEY = 'tdb_photo_v2';
+    const COMPANIES_KEY = 'tdb_companies_v2';
+
+    function applicationText(interest) {
+      const v = String(interest || '').toLowerCase();
+      if (v.includes('ausbildung')) return 'Hallo, ich habe Sie am Tag des Berufs kennengelernt. Gerne bewerbe ich mich um einen Ausbildungsplatz.';
+      if (v.includes('duales')) return 'Hallo, ich habe Sie am Tag des Berufs kennengelernt. Gerne bewerbe ich mich um einen Platz für ein duales Studium.';
+      if (v.includes('praktikum')) return 'Hallo, ich habe Sie am Tag des Berufs kennengelernt. Gerne bewerbe ich mich um ein Praktikum.';
+      return 'Hallo, ich habe Sie am Tag des Berufs kennengelernt. Gerne bewerbe ich mich um ...';
+    }
+
+    function fillOrDash(value) {
+      return value && value.trim() ? value.trim() : '—';
+    }
+
+    function sanitizeFilename(text) {
+      return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9-_ ]/g, '').trim().replace(/\s+/g, '_');
+    }
+
+    function buildFilename() {
+      const nameVal = sanitizeFilename(nameInput.value || 'kurzbewerbung');
+      const careerVal = sanitizeFilename(careerInput.value || 'tag_des_berufs');
+      return `${nameVal}_${careerVal}.png`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+      }[c]));
+    }
+
+    function syncCard() {
+      const nameVal = fillOrDash(nameInput.value);
+      const schoolVal = fillOrDash(schoolInput.value);
+      const abschlussVal = fillOrDash(abschlussInput.value);
+      const abschlussWannVal = fillOrDash(abschlussWannInput.value);
+      const contactVal = fillOrDash(contactInput.value);
+      const interestVal = fillOrDash(interestInput.value);
+      const timeframeVal = fillOrDash(timeframeInput.value);
+      const careerVal = fillOrDash(careerInput.value);
+
+      document.getElementById('v_name').textContent = nameVal;
+      document.getElementById('v_metaList').innerHTML =
+        '<strong>Schule:</strong> ' + escapeHtml(schoolVal) + '<br>' +
+        '<strong>Voraussichtlicher Abschluss:</strong> ' + escapeHtml(abschlussVal) + '<br>' +
+        '<strong>Abschluss voraussichtlich:</strong> ' + escapeHtml(abschlussWannVal) + '<br>' +
+        '<strong>Kontakt:</strong> ' + escapeHtml(contactVal);
+      document.getElementById('v_interest').textContent = interestVal;
+      document.getElementById('v_timeframe').textContent = timeframeVal;
+      document.getElementById('v_career').textContent = careerVal;
+      document.getElementById('v_contact').textContent = contactVal;
+      document.getElementById('introText').textContent = applicationText(interestInput.value);
+    }
+
+    function profileObject() {
+      return {
+        name: nameInput.value,
+        school: schoolInput.value,
+        abschluss: abschlussInput.value,
+        abschlussWann: abschlussWannInput.value,
+        contact: contactInput.value,
+        interest: interestInput.value,
+        timeframe: timeframeInput.value,
+        career: careerInput.value
+      };
+    }
+
+    function saveProfile() {
+      try { localStorage.setItem(PROFILE_KEY, JSON.stringify(profileObject())); }
+      catch (e) { console.warn('Profil konnte nicht lokal gespeichert werden.', e); }
+    }
+
+    function loadProfile() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+        if (!saved) return;
+        nameInput.value = saved.name || '';
+        schoolInput.value = saved.school || '';
+        abschlussInput.value = saved.abschluss || '';
+        abschlussWannInput.value = saved.abschlussWann || '';
+        contactInput.value = saved.contact || '';
+        interestInput.value = saved.interest || '';
+        timeframeInput.value = saved.timeframe || '';
+        careerInput.value = saved.career || '';
+      } catch (e) { console.warn('Lokales Profil konnte nicht geladen werden.', e); }
+    }
+
+    [
+      nameInput, schoolInput, abschlussInput, abschlussWannInput,
+      contactInput, interestInput, timeframeInput, careerInput
+    ].forEach(el => {
+      el.addEventListener('input', () => { syncCard(); saveProfile(); });
+      el.addEventListener('change', () => { syncCard(); saveProfile(); });
+    });
+
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files && photoInput.files[0];
+      if (!file) {
+        previewPhoto.style.display = 'none';
+        previewPhoto.removeAttribute('src');
+        photoPlaceholder.style.display = 'block';
+        localStorage.removeItem(PHOTO_KEY);
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        alert('Bitte wähle eine Bilddatei aus.');
+        photoInput.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        const dataUrl = e.target.result;
+        previewPhoto.src = dataUrl;
+        previewPhoto.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+        try { localStorage.setItem(PHOTO_KEY, dataUrl); }
+        catch (err) {
+          alert('Das Foto ist zu groß für den lokalen Speicher. Es wird nur für diese Sitzung verwendet.');
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function loadPhoto() {
+      const dataUrl = localStorage.getItem(PHOTO_KEY);
+      if (!dataUrl) return;
+      previewPhoto.src = dataUrl;
+      previewPhoto.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+    }
+
+    async function createBlobFromCard() {
+      syncCard();
+      if (typeof html2canvas !== 'function') {
+        throw new Error('html2canvas fehlt. Für den lokalen PNG-Export muss html2canvas.min.js neben index.html liegen.');
+      }
+      const card = document.getElementById('card');
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: false
+      });
+      return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    async function saveOrShareCard() {
+      let blob;
+      try {
+        blob = await createBlobFromCard();
+      } catch (e) {
+        alert('Der PNG-Export ist noch nicht verfügbar. Bitte html2canvas.min.js lokal hinzufügen.');
+        return;
+      }
+      if (!blob) return;
+      const filename = buildFilename();
+      const file = new File([blob], filename, { type: 'image/png' });
+
+      if (navigator.canShare && navigator.share) {
+        try {
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: 'Kurzbewerbung – Tag des Berufs',
+              text: 'Meine Kurzbewerbung als PNG'
+            });
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('saveBtn').addEventListener('click', saveOrShareCard);
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('Soll deine Kurzbewerbung wirklich gelöscht werden?')) return;
+      [nameInput, schoolInput, abschlussInput, abschlussWannInput,
+       contactInput, interestInput, timeframeInput, careerInput].forEach(el => el.value = '');
+      previewPhoto.style.display = 'none';
+      previewPhoto.removeAttribute('src');
+      photoPlaceholder.style.display = 'block';
+      photoInput.value = '';
+      localStorage.removeItem(PROFILE_KEY);
+      localStorage.removeItem(PHOTO_KEY);
+      syncCard();
+    });
+
+    const companyName = document.getElementById('companyName');
+    const companyStand = document.getElementById('companyStand');
+    const companyContact = document.getElementById('companyContact');
+    const companyRating = document.getElementById('companyRating');
+    const companyNext = document.getElementById('companyNext');
+    const companyNote = document.getElementById('companyNote');
+    const companyList = document.getElementById('companyList');
+
+    let companies = [];
+
+    function loadCompanies() {
+      try {
+        const saved = localStorage.getItem(COMPANIES_KEY);
+        companies = saved ? JSON.parse(saved) : [];
+      } catch { companies = []; }
+      renderCompanies();
+    }
+
+    function saveCompanies() {
+      try {
+        localStorage.setItem(COMPANIES_KEY, JSON.stringify(companies));
+        renderCompanies();
+      } catch (e) {
+        alert('Die gespeicherten Daten sind zu groß. Bitte ältere Einträge löschen.');
+      }
+    }
+
+    function ratingLabel(value) {
+      if (value === 'top') return '⭐ Sehr interessant';
+      if (value === 'good') return '👍 Interessant';
+      if (value === 'maybe') return '🤔 Vielleicht';
+      return '—';
+    }
+
+    function ratingClass(value) {
+      if (value === 'top') return 'badge-top';
+      if (value === 'good') return 'badge-good';
+      return 'badge-maybe';
+    }
+
+    function renderCompanies() {
+      if (!companies.length) {
+        companyList.innerHTML = '<div class="company-empty">Noch keine Unternehmen gespeichert.</div>';
+        return;
+      }
+      companyList.innerHTML = companies.map((item, index) => `
+        <div class="company-card">
+          <div class="company-name">${escapeHtml(item.name || '—')}</div>
+          <div class="company-meta">
+            <strong>Stand / Bereich:</strong> ${escapeHtml(item.stand || '—')}<br>
+            <strong>Ansprechpartner:</strong> ${escapeHtml(item.contact || '—')}<br>
+            <strong>Nächster Schritt:</strong> ${escapeHtml(item.next || '—')}
+          </div>
+          <span class="company-badge ${ratingClass(item.rating)}">${ratingLabel(item.rating)}</span>
+          <div class="company-note">${escapeHtml(item.note || '—')}</div>
+          <div class="company-actions">
+            <button class="mini-btn danger" onclick="deleteCompany(${index})">Löschen</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.deleteCompany = function(index) {
+      companies.splice(index, 1);
+      saveCompanies();
+    };
+
+    document.getElementById('companySaveBtn').addEventListener('click', () => {
+      const item = {
+        name: companyName.value.trim(),
+        stand: companyStand.value.trim(),
+        contact: companyContact.value.trim(),
+        rating: companyRating.value,
+        next: companyNext.value,
+        note: companyNote.value.trim()
+      };
+      if (!item.name) {
+        alert('Bitte mindestens den Unternehmensnamen eintragen.');
+        return;
+      }
+      companies.unshift(item);
+      saveCompanies();
+      companyName.value = '';
+      companyStand.value = '';
+      companyContact.value = '';
+      companyRating.value = '';
+      companyNext.value = '';
+      companyNote.value = '';
+    });
+
+    document.getElementById('companyResetBtn').addEventListener('click', () => {
+      companyName.value = '';
+      companyStand.value = '';
+      companyContact.value = '';
+      companyRating.value = '';
+      companyNext.value = '';
+      companyNote.value = '';
+    });
+
+    document.getElementById('exportDataBtn').addEventListener('click', () => {
+      const data = {
+        exportedAt: new Date().toISOString(),
+        profile: profileObject(),
+        photo: localStorage.getItem(PHOTO_KEY) || null,
+        companies
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = 'tag-des-berufs-meine-daten.json';
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('deleteDataBtn').addEventListener('click', () => {
+      if (!confirm('Wirklich alle lokal gespeicherten Daten dieser App löschen?')) return;
+      localStorage.removeItem(PROFILE_KEY);
+      localStorage.removeItem(PHOTO_KEY);
+      localStorage.removeItem(COMPANIES_KEY);
+      companies = [];
+      [nameInput, schoolInput, abschlussInput, abschlussWannInput,
+       contactInput, interestInput, timeframeInput, careerInput].forEach(el => el.value = '');
+      previewPhoto.style.display = 'none';
+      previewPhoto.removeAttribute('src');
+      photoPlaceholder.style.display = 'block';
+      photoInput.value = '';
+      syncCard();
+      renderCompanies();
+    });
+
+    loadProfile();
+    loadPhoto();
+    syncCard();
+    loadCompanies();
+
+
+    // Install as PWA when the browser offers it.
+    let deferredInstallPrompt = null;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installBtn.hidden = false;
+    });
+    installBtn.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installBtn.hidden = true;
+    });
+    window.addEventListener('appinstalled', () => {
+      installBtn.hidden = true;
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err =>
+          console.warn('Offline-Funktion konnte nicht aktiviert werden.', err)
+        );
+      });
+    }
+
+  </script>
+
+</body>
+</html>
