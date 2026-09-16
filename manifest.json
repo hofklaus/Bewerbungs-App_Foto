@@ -1,9 +1,0 @@
-{
-  "name": "Kurzbewerbung – Tag des Berufs",
-  "short_name": "Tag des Berufs",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#f7f8fb",
-  "lang": "de"
-}
