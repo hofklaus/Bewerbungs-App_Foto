@@ -1,4 +1,4 @@
-const CACHE = "tag-des-berufs-v3";
+const CACHE = "tag-des-berufs-v4";
 const ASSETS = ["./", "./index.html", "./manifest.json", "./html2canvas.min.js", "./logo.png"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
